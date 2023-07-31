@@ -1,4 +1,7 @@
-#include "schedina.hpp"
+#ifndef EXTRACTION_EVENT_HPP
+#define EXTRACTION_EVENT_HPP
+
+#include "Schedina.hpp"
 #include <vector>
 
 class Extraction_event {
@@ -10,5 +13,10 @@ private:
 public:
   Extraction_event(std::vector<int> numbers);
 
+  /// @brief controlla se una schedina è vincente o no
+  /// @param scheda la schedina da controllare
+  /// @return 1 se è vincente, 0 se non lo è
   bool check_win(Schedina scheda);
 };
+
+#endif
