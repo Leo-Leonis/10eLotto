@@ -6,14 +6,22 @@
 
 class Extraction_event {
 private:
+  // vettore dei venti numeri estratti
   std::vector<int> twenty_ = std::vector<int>(20);
+
+  // vettore degli extra
   std::vector<int> fifteen_ = std::vector<int>(15);
+  
+  // vettore dell'oro e del doppio oro
   std::vector<int> oro_ = std::vector<int>(2);
 
-public:
-  Extraction_event(std::vector<int> numbers);
+  // numero gong
+  int const gong_n_;
 
-  /// @brief controlla se una schedina è vincente o no
+public:
+  Extraction_event(std::vector<int> &numbers, int gong_n);
+
+  /// @brief Controlla se una schedina è vincente o no
   /// @param scheda la schedina da controllare
   /// @return 1 se è vincente, 0 se non lo è
   bool check_win(Schedina scheda);
