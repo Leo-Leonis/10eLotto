@@ -6,34 +6,6 @@
 #include <sstream>
 #include <vector>
 
-/* int countIntegersInCommon(const std::vector<int> &vec1,
-                          const std::vector<int> &vec2) {
-  int count = 0;
-
-  // Ordiniamo i vettori per semplificare il controllo delle corrispondenze
-  std::vector<int> sortedVec1 = vec1;
-  std::sort(sortedVec1.begin(), sortedVec1.end());
-
-  std::vector<int> sortedVec2 = vec2;
-  std::sort(sortedVec2.begin(), sortedVec2.end());
-
-  // Troviamo i numeri presenti in entrambi i vettori
-  for (size_t i = 0, j = 0; i < sortedVec1.size() && j < sortedVec2.size();) {
-    if (sortedVec1[i] < sortedVec2[j]) {
-      i++;
-    } else if (sortedVec1[i] > sortedVec2[j]) {
-      j++;
-    } else {
-      // Trovato un numero presente in entrambi i vettori
-      count++;
-      i++;
-      j++;
-    }
-  }
-
-  return count;
-} */
-
 // conta la quantità di numeri (int) in comune con il vettore entrante
 int countIntegersInCommon(const std::vector<int> &ten,
                           const std::vector<int> &twenty) {
@@ -79,18 +51,20 @@ int getValueFromTable(const std::string &filename, int row, int column) {
   return value;
 }
 
-Extraction_event::Extraction_event(std::vector<int> &numbers, int gong_n)
+Extraction_event::Extraction_event(const std::vector<int> &numbers, int gong_n)
     : gong_n_{gong_n} {
   for (int i = 0; i < 2; i++) {
-    numbers[i] = twenty_[i];
-    numbers[i] = oro_[i];
+    twenty_[i] = numbers[i];
+    oro_[i] = numbers[i];
   }
   for (int i = 2; i < 20; i++) {
-    numbers[i] = twenty_[i];
+    twenty_[i] = numbers[i];
   }
   for (int i = 20; i < 35; i++) {
-    numbers[i] = fifteen_[i - 20];
+    fifteen_[i - 20] = numbers[i];
   }
+  std::sort(twenty_.begin(), twenty_.end());
+  std::sort(fifteen_.begin(), fifteen_.end());
 }
 
 bool Extraction_event::check_win(Schedina scheda) {
@@ -116,18 +90,49 @@ bool Extraction_event::check_win(Schedina scheda) {
     return 1;
   }
 
+  // se la schedina ha l'extra e ne ha preso il numero sufficiente allora...
+  if (scheda.has_extra() &&
+      getValueFromTable("wins/extra.txt", size - 1, count_extra) != 0) {
+    return 1;
+  }
+
   // se nel gioco classico ha preso il numero sufficiente di numeri allora...
   if (getValueFromTable("wins/twenty.txt", size - 1, count) == 0) {
     return 0;
   } else {
     return 1;
   }
+}
 
-  // se la schedina ha l'extra e ne ha preso il numero sufficiente allora...
-  if (scheda.has_extra() &&
-      getValueFromTable("wins/extra.txt", size - 1, count_extra) == 0) {
-    return 0;
-  } else {
-    return 1;
+// TODO: IMPLEMENTARE QUESTO
+int Extraction_event::numbers_in_common(Schedina scheda) {
+
+}
+
+int Extraction_event::numbers_in_common_extra(Schedina scheda) {
+
+}
+
+void Extraction_event::print_twenty() {
+  std::cout << "I numeri sono: ";
+  for (int i : twenty_) {
+    std::cout << i << ' ';
   }
+  std::cout << '\n';
+}
+
+void Extraction_event::print_doppio_oro() {
+  std::cout << "L'oro e il doppio oro sono: ";
+  std::cout << "ORO: " << oro_[0] << "; DOPPIO ORO: " << oro_[1] << '\n';
+}
+void Extraction_event::print_extra() {
+  std::cout << "Gli extra sono: ";
+  for (int i : fifteen_) {
+    std::cout << i << ' ';
+  }
+  std::cout << '\n';
+}
+
+void Extraction_event::print_gong_n() {
+  std::cout << "il numero gong è:" << gong_n_ << '\n';
 }

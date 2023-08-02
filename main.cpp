@@ -8,7 +8,7 @@
 #include "Extraction_event.hpp"
 #include "Schedina.hpp"
 
-void program(int type = 0) { return; }
+// void program(int type = 0) { return; }
 
 int main() {
   std::random_device rd;
@@ -39,10 +39,21 @@ int main() {
     std::cout << "inserire il numero: ";
     std::cin >> ten[0];
   } else {
-    std::cout << "inserire i " << numbers << " numeri:\n";
+    std::cout << "inserire i " << numbers << " numeri (da 1 a 90):\n";
+    int n_check;
     for (int i = 0; i < numbers; i++) {
       std::cout << "n. " << i + 1 << ": ";
-      std::cin >> ten[i];
+      std::cin >> n_check;
+      if (std::count(ten.begin(), ten.end(), n_check) != 0) {
+        std::cout << "ATTENZIONE: numero già inserito. Riprova a inserire il ";
+        i--;
+      } else if (n_check < 1 || n_check > 90) {
+        std::cout << "ATTENZIONE: valore fuori range (da 1 a 90). Riprova a "
+                     "inserire il ";
+        i--;
+      } else {
+        ten[i] = n_check;
+      }
     }
   }
   std::cout << '\n' << "la schedina è quindi: ";
@@ -50,6 +61,9 @@ int main() {
     std::cout << i << ' ';
   }
   std::cout << "\n\n";
+
+  Schedina scheda(ten, 1, 0, 0, 0, 0, 0, 0);
+  ///*TEST TEST TEST*/ std::cout << "QUESTO è UNA PROVA////////////\n";
 
   int iterations;
   std::cout << "iterazioni (minimo 1): ";
@@ -61,16 +75,46 @@ int main() {
   }
   std::cout << '\n';
 
+  int win_n = 0;
+
+  // ciclo iterazioni
   for (int i = 0; i < iterations; i++) {
     // randomizzo l'ordine
     std::shuffle(ninty.begin(), ninty.end(), g);
 
-    /* // stampa il vettore
+    Extraction_event extraction(ninty, 0);
+
+    // stampa il vettore
+    std::cout << "il vettore ninty è: ";
     for (int i : ninty) {
       std::cout << i << ' ';
     }
-    std::cout << "\n\n"; */
+    std::cout << "\n\n";
+
+    extraction.print_twenty();
+    extraction.print_doppio_oro();
+    extraction.print_extra();
+    extraction.print_gong_n();
+
+    if (extraction.check_win(scheda)) {
+      std::cout << "(\033[32m"
+                << "schedina vincente"
+                << "\033[0m)"
+                << "\n";
+      win_n++;
+    } else {
+      std::cout << "(\033[31m"
+                << "schedina non vincente"
+                << "\033[0m)"
+                << "\n";
+    }
+
+    std::cout << '\n';
   }
+  std::cout << "esito di " << iterations << " estrazioni. Vincite: " << win_n
+            << "/" << iterations << " = "
+            << static_cast<float>(win_n) * 100 / static_cast<float>(iterations)
+            << '%' << "\n\n\n";
 
   return 0;
 }

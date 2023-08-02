@@ -1,6 +1,7 @@
 #ifndef SCHEDINA_HPP
 #define SCHEDINA_HPP
 
+#include <iostream>
 #include <stdexcept>
 #include <vector>
 
@@ -18,12 +19,12 @@ private:
 
 public:
   Schedina() {}
-  Schedina(std::vector<int> numbers, float bet, bool oro, bool doppio_oro,
-           bool extra, float extra_bet, bool gong, int gong_n)
+  Schedina(const std::vector<int> &numbers, float bet, bool oro,
+           bool doppio_oro, bool extra, float extra_bet, bool gong, int gong_n)
       : bet_{bet}, oro_{oro}, doppio_oro_{doppio_oro}, extra_{extra},
         extra_bet_{extra_bet}, gong_{gong}, gong_n_{gong_n} {
-    for (int i = 0; i < numbers.size(); i++) {
-      numbers[i] = ten_[i];
+    for (int i = 0; i < static_cast<int>(numbers.size()); i++) {
+      ten_.push_back(numbers[i]);
     }
     if (doppio_oro_ == 1)
       oro_ = 1;
