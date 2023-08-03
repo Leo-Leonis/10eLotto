@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <stdexcept>
 #include <vector>
 
 // conta la quantità di numeri (int) in comune con il vettore entrante
@@ -86,7 +87,7 @@ bool Extraction_event::check_win(Schedina scheda) {
     return 1;
   } // altrimenti se la schedina ha solo l'oro e l'ha preso, allora...
   else if (scheda.has_oro() &&
-           std::count(ten.begin(), ten.end(), oro_[0] == 1)) {
+           std::count(ten.begin(), ten.end(), oro_[0]) == 1) {
     return 1;
   }
 
@@ -104,13 +105,58 @@ bool Extraction_event::check_win(Schedina scheda) {
   }
 }
 
-// TODO: IMPLEMENTARE QUESTO
-int Extraction_event::numbers_in_common(Schedina scheda) {
+int Extraction_event::get_win_f(Schedina scheda) {
 
+  if (this->check_win(scheda) == 0) {
+    return 0;
+  }
+
+  // fattore di vincita totale
+  int total_win_f = 0;
+
+  // gong
+  if (scheda.has_gong() && scheda.get_gong_n() == gong_n_) {
+    total_win_f += getValueFromTable("wins/gong.txt", 0, 0);
+  }
+
+  // vettore dei numeri scelti
+  std::vector<int> ten = scheda.get_ten();
+  // quantità dei numeri scelti
+  int const size = ten.size();
+  // quantità dei numeri beccati
+  int count = countIntegersInCommon(ten, twenty_);
+  int count_extra = countIntegersInCommon(ten, fifteen_);
+  int count_doppio_oro = countIntegersInCommon(ten, oro_);
+  if (count_doppio_oro < 0 || count_doppio_oro > 2) {
+    throw std::runtime_error("ERROR: more oro counted.");
+  }
+
+  // se la schedina ha il doppio oro e ne ha beccati 2, allora...
+  if (scheda.has_doppio_oro() && count_doppio_oro == 2) {
+    total_win_f += getValueFromTable("wins/doppio_oro.txt", size - 1, count);
+  } // altrimenti se la schedina ha preso un solo oro, allora...
+  else if ((scheda.has_doppio_oro() && count_doppio_oro == 1) ||
+           (scheda.has_oro() &&
+            std::count(ten.begin(), ten.end(), oro_[0]) == 1)) {
+    total_win_f += getValueFromTable("wins/oro.txt", size - 1, count);
+  } else {
+    total_win_f += getValueFromTable("wins/twenty.txt", size - 1, count);
+  }
+
+  // se la schedina ha l'extra e ne ha preso il numero sufficiente allora...
+  if (scheda.has_extra()) {
+    total_win_f += getValueFromTable("wins/extra.txt", size - 1, count_extra);
+  }
+
+  return total_win_f;
+}
+
+int Extraction_event::numbers_in_common(Schedina scheda) {
+  return countIntegersInCommon(scheda.get_ten(), twenty_);
 }
 
 int Extraction_event::numbers_in_common_extra(Schedina scheda) {
-
+  return countIntegersInCommon(scheda.get_ten(), fifteen_);
 }
 
 void Extraction_event::print_twenty() {
@@ -123,10 +169,12 @@ void Extraction_event::print_twenty() {
 
 void Extraction_event::print_doppio_oro() {
   std::cout << "L'oro e il doppio oro sono: ";
-  std::cout << "ORO: " << oro_[0] << "; DOPPIO ORO: " << oro_[1] << '\n';
+  std::cout << "\033[93mORO: " << oro_[0]
+            << "\033[0m; \033[33mDOPPIO ORO: " << oro_[1] << "\033[0m\n";
 }
+
 void Extraction_event::print_extra() {
-  std::cout << "Gli extra sono: ";
+  std::cout << "Gli \033[94mextra\033[0m sono: ";
   for (int i : fifteen_) {
     std::cout << i << ' ';
   }
@@ -134,5 +182,5 @@ void Extraction_event::print_extra() {
 }
 
 void Extraction_event::print_gong_n() {
-  std::cout << "il numero gong è:" << gong_n_ << '\n';
+  std::cout << "il numero gong è: " << gong_n_ << '\n';
 }

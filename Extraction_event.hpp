@@ -26,6 +26,11 @@ public:
   /// @return 1 se è vincente, 0 se non lo è
   bool check_win(Schedina scheda);
 
+  /// @brief Restituisce il fattore di vincita data una schedina
+  /// @param scheda la schedina da controllare
+  /// @return Il fattore di vincita data dalla tabella
+  int get_win_f(Schedina scheda);
+
   int numbers_in_common(Schedina scheda);
   int numbers_in_common_extra(Schedina scheda);
 
