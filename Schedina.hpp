@@ -53,6 +53,43 @@ public:
   int get_gong_n() { return gong_n_; }
 
   float get_total_bet() { return total_bet_; }
+
+  void print_schedina() {
+    std::cout << "\n///////////////////////////////////////////\n\n";
+    this->print_ten();
+    if (doppio_oro_ == 1) {
+      std::cout << " Doppio oro: SÌ (" << bet_ << "€)" << '\n';
+      std::cout << "        Oro: SÌ (" << bet_ << "€)" << '\n';
+    } else if (oro_ == 1) {
+      std::cout << " Doppio oro: NO" << '\n';
+      std::cout << "        Oro: SÌ (" << bet_ << "€)" << '\n';
+    } else {
+      std::cout << " Doppio oro: NO" << '\n';
+      std::cout << "        Oro: NO" << '\n';
+    }
+
+    if (extra_ == 1) {
+      std::cout << "      Extra: SÌ (" << extra_bet_ << "€)" << '\n';
+    } else {
+      std::cout << "      Extra: NO" << '\n';
+    }
+
+    if (gong_ == 1) {
+      std::cout << "       Gong: SÌ (" << gong_n_ << ", " << bet_ << "€)" << '\n';
+    } else {
+      std::cout << "       Gong: NO" << '\n';
+    }
+    std::cout << '\n' << "TOTAL BET: " << total_bet_ << "€" << '\n';
+    std::cout << "\n///////////////////////////////////////////\n\n";
+  }
+
+  void print_ten() {
+    std::cout << "La schedina è quindi: ";
+    for (int i : ten_) {
+      std::cout << i << ' ';
+    }
+    std::cout << '\n';
+  }
 };
 
 #endif

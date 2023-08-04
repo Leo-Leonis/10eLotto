@@ -107,10 +107,6 @@ bool Extraction_event::check_win(Schedina scheda) {
 
 int Extraction_event::get_win_f(Schedina scheda) {
 
-  if (this->check_win(scheda) == 0) {
-    return 0;
-  }
-
   // fattore di vincita totale
   int total_win_f = 0;
 
@@ -128,7 +124,7 @@ int Extraction_event::get_win_f(Schedina scheda) {
   int count_extra = countIntegersInCommon(ten, fifteen_);
   int count_doppio_oro = countIntegersInCommon(ten, oro_);
   if (count_doppio_oro < 0 || count_doppio_oro > 2) {
-    throw std::runtime_error("ERROR: more oro counted.");
+    throw std::runtime_error("ERRORE: contati più di due ori.");
   }
 
   // se la schedina ha il doppio oro e ne ha beccati 2, allora...
@@ -168,7 +164,6 @@ void Extraction_event::print_twenty() {
 }
 
 void Extraction_event::print_doppio_oro() {
-  std::cout << "L'oro e il doppio oro sono: ";
   std::cout << "\033[93mORO: " << oro_[0]
             << "\033[0m; \033[33mDOPPIO ORO: " << oro_[1] << "\033[0m\n";
 }

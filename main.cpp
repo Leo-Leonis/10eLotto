@@ -1,7 +1,9 @@
 #include <algorithm>
 #include <iostream>
+#include <math.h>
 #include <numeric>
 #include <random>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -10,20 +12,27 @@
 
 // void program(int type = 0) { return; }
 
+///*TEST TEST TEST*/ std::cout << "QUESTO è UNA PROVA////////////\n";
+
 // int argc = numero di argomenti (compreso "./a.out")
 // char* argv[] = array di string degli argomenti
 int main(int const argc, char const *const *argv) {
   std::random_device rd;
   std::mt19937 g(rd());
+  std::uniform_int_distribution<int> distr(1, 91);
+  // distr(rd) per un numero random
 
   std::vector<int> ninty = std::vector<int>(90);
   // creo i numeri
   std::iota(ninty.begin(), ninty.end(), 1);
 
-  bool doppio_oro_s;
+  float bet;
   bool oro_s;
+  bool doppio_oro_s;
   bool extra_s;
+  float extra_bet;
   bool gong_s;
+  int gong_n;
 
   // quantità dei numeri della schedina (ten)
   int numbers;
@@ -44,7 +53,7 @@ int main(int const argc, char const *const *argv) {
   std::vector<int> ten(numbers);
 
   std::string opt;
-  std::cout << "random numbers? (\"1\" for yes, other key for no)" << '\n';
+  std::cout << "randomizzo? (\"1\" for yes, other key for no)" << '\n';
   std::cin >> opt;
   if (opt == "1") {
     std::shuffle(ninty.begin(), ninty.end(), g);
@@ -57,6 +66,7 @@ int main(int const argc, char const *const *argv) {
       std::cin >> ten[0];
     } else {
       std::cout << "inserire i " << numbers << " numeri (da 1 a 90):\n";
+      // numero provvisorio da inserire
       int n_check;
       for (int i = 0; i < numbers; i++) {
         std::cout << "n. " << i + 1 << ": ";
@@ -77,27 +87,45 @@ int main(int const argc, char const *const *argv) {
   }
   std::sort(ten.begin(), ten.end());
 
-  /* std::cout << "Giocare il Doppio Oro? (\"1\" for yes) ";
+  // inserimento opzioni gioco
+  std::cout << "Quanto vuoi giocare? (multiplo di 0.50€)\n";
+  std::cin >> bet;
+  if (fmodf(bet, 0.5f) != 0.f) {
+    throw std::runtime_error("Il bet deve essere un multiplo di 0.50€.");
+  }
+  std::cout << "Giocare il Doppio Oro? (\"1\" for yes)\n";
   std::cin >> doppio_oro_s;
-  if (doppio_oro_s == 1) {
-    std::cout << "random? (\"1\" for yes)";
-    //TODO FINIRE QUESTA PARTE (SELEZIONE)
+  if (doppio_oro_s == 0) {
+    std::cout << "Giocare l'Oro? (\"1\" for yes)\n";
+    std::cin >> oro_s;
   }
-  std::cout << "Giocare l'Oro? (\"1\" for yes)";
-  std::cin >> oro_s;
-  std::cout << "Giocare l'Extra? (\"1\" for yes)";
+  std::cout << "Giocare l'Extra? (\"1\" for yes)\n";
   std::cin >> extra_s;
-  std::cout << "Giocare il gong? (\"1\" for yes)";
-  std::cin >> gong_s;
- */
-  std::cout << '\n' << "la schedina è quindi: ";
-  for (int i : ten) {
-    std::cout << i << ' ';
+  std::cout << "Quanto vuoi giocare nell'Extra? (multiplo di 0.50€)\n";
+  std::cin >> extra_bet;
+  if (extra_bet > bet) {
+    throw std::runtime_error("L'Extra non può essere più alto del 10eLotto.");
   }
-  std::cout << "\n\n";
+  if (fmodf(extra_bet, 0.5f) != 0.f) {
+    throw std::runtime_error("L'Extra deve essere un multiplo di 0.50€.");
+  }
+  std::cout << "Giocare il gong? (\"1\" for yes)\n";
+  std::cin >> gong_s;
+  if (gong_s == 1) {
+    std::string c;
+    std::cout << "randomizzo? (\"1\" for yes)\n";
+    std::cin >> c;
+    if (c == "1") {
+      gong_n = distr(rd);
+    } else {
+      std::cout << "Inserire in numero gong: ";
+      std::cin >> gong_n;
+    }
+  }
 
-  Schedina scheda(ten, 1, 0, 0, 0, 0, 0, 0);
-  ///*TEST TEST TEST*/ std::cout << "QUESTO è UNA PROVA////////////\n";
+  Schedina scheda(ten, bet, oro_s, doppio_oro_s, extra_s, extra_bet, gong_s, gong_n);
+  // riepilogo schedina
+  scheda.print_schedina();
 
   // numero di iterazioni (estrazioni)
   int iterations;
@@ -120,8 +148,9 @@ int main(int const argc, char const *const *argv) {
     // randomizzo l'ordine
     std::shuffle(ninty.begin(), ninty.end(), g);
 
-    Extraction_event extraction(ninty, 0);
+    Extraction_event extraction(ninty, distr(rd));
     int count = extraction.numbers_in_common(scheda);
+    int count_extra = extraction.numbers_in_common_extra(scheda);
     categ[count]++;
 
     // se si mette l'opzione "-pr" (Print Result) si stampano i risultati per
@@ -149,13 +178,15 @@ int main(int const argc, char const *const *argv) {
       }
 
       if (extraction.check_win(scheda)) {
-        std::cout << "(" << count << " su " << numbers << ", \033[32m"
+        std::cout << "(" << count << " su " << numbers << ", "
+                  << "extra " << count_extra << " su " << numbers << ", \033[32m"
                   << "schedina vincente"
                   << "\033[0m)"
                   << "\n";
         win_n++;
       } else {
-        std::cout << "(" << count << " su " << numbers << ", \033[31m"
+        std::cout << "(" << count << " su " << numbers << ", "
+                  << "extra " << count_extra << " su " << numbers << ", \033[31m"
                   << "schedina non vincente"
                   << "\033[0m)"
                   << "\n";
