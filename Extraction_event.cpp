@@ -68,7 +68,7 @@ Extraction_event::Extraction_event(const std::vector<int> &numbers, int gong_n)
   std::sort(fifteen_.begin(), fifteen_.end());
 }
 
-bool Extraction_event::check_win(Schedina scheda) {
+bool Extraction_event::check_win(const Schedina &scheda) const {
   // gong
   if (scheda.has_gong() && scheda.get_gong_n() == gong_n_) {
     return 1;
@@ -105,7 +105,7 @@ bool Extraction_event::check_win(Schedina scheda) {
   }
 }
 
-int Extraction_event::get_win_f(Schedina scheda) {
+int Extraction_event::get_win_f(const Schedina &scheda) const {
 
   // fattore di vincita totale
   int total_win_f = 0;
@@ -147,15 +147,37 @@ int Extraction_event::get_win_f(Schedina scheda) {
   return total_win_f;
 }
 
-int Extraction_event::numbers_in_common(Schedina scheda) {
+int Extraction_event::numbers_in_common(const Schedina &scheda) const {
   return countIntegersInCommon(scheda.get_ten(), twenty_);
 }
 
-int Extraction_event::numbers_in_common_extra(Schedina scheda) {
+int Extraction_event::numbers_in_common_extra(const Schedina &scheda) const {
   return countIntegersInCommon(scheda.get_ten(), fifteen_);
 }
 
-void Extraction_event::print_twenty() {
+int Extraction_event::numbers_in_common_doppio_oro(
+    const Schedina &scheda) const {
+  return countIntegersInCommon(scheda.get_ten(), oro_);
+}
+
+bool Extraction_event::check_oro(const Schedina &scheda) const {
+  if (std::count(scheda.get_ten().begin(), scheda.get_ten().end(), oro_[0]) ==
+      1) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
+bool Extraction_event::check_gong(const Schedina &scheda) const {
+  if (scheda.get_gong_n() == gong_n_) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
+void Extraction_event::print_twenty() const {
   std::cout << "I numeri sono: ";
   for (int i : twenty_) {
     std::cout << i << ' ';
@@ -163,12 +185,12 @@ void Extraction_event::print_twenty() {
   std::cout << '\n';
 }
 
-void Extraction_event::print_doppio_oro() {
+void Extraction_event::print_doppio_oro() const {
   std::cout << "\033[93mORO: " << oro_[0]
             << "\033[0m; \033[33mDOPPIO ORO: " << oro_[1] << "\033[0m\n";
 }
 
-void Extraction_event::print_extra() {
+void Extraction_event::print_extra() const {
   std::cout << "Gli \033[94mextra\033[0m sono: ";
   for (int i : fifteen_) {
     std::cout << i << ' ';
@@ -176,6 +198,6 @@ void Extraction_event::print_extra() {
   std::cout << '\n';
 }
 
-void Extraction_event::print_gong_n() {
+void Extraction_event::print_gong_n() const {
   std::cout << "il numero gong è: " << gong_n_ << '\n';
 }

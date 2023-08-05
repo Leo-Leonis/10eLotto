@@ -36,25 +36,25 @@ public:
 
   /// @brief ritorna la vettore dei numeri scelti della schedina
   /// @return std::vector<int>
-  std::vector<int> get_ten() { return ten_; }
+  std::vector<int> get_ten() const { return ten_; }
 
-  float get_bet() { return bet_; }
+  float get_bet() const { return bet_; }
 
-  bool has_oro() { return oro_; }
+  bool has_oro() const { return oro_; }
 
-  bool has_doppio_oro() { return doppio_oro_; }
+  bool has_doppio_oro() const { return doppio_oro_; }
 
-  bool has_extra() { return extra_; }
+  bool has_extra() const { return extra_; }
 
-  float get_extra_bet() { return extra_bet_; }
+  float get_extra_bet() const { return extra_bet_; }
 
-  bool has_gong() { return gong_; }
+  bool has_gong() const { return gong_; }
 
-  int get_gong_n() { return gong_n_; }
+  int get_gong_n() const { return gong_n_; }
 
-  float get_total_bet() { return total_bet_; }
+  float get_total_bet() const { return total_bet_; }
 
-  void print_schedina() {
+  void print_schedina() const {
     std::cout << "\n///////////////////////////////////////////\n\n";
     this->print_ten();
     if (doppio_oro_ == 1) {
@@ -83,7 +83,7 @@ public:
     std::cout << "\n///////////////////////////////////////////\n\n";
   }
 
-  void print_ten() {
+  void print_ten() const {
     std::cout << "La schedina è quindi: ";
     for (int i : ten_) {
       std::cout << i << ' ';

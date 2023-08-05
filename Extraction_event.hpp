@@ -24,20 +24,23 @@ public:
   /// @brief Controlla se una schedina è vincente o no
   /// @param scheda la schedina da controllare
   /// @return 1 se è vincente, 0 se non lo è
-  bool check_win(Schedina scheda);
+  bool check_win(const Schedina &scheda) const;
 
   /// @brief Restituisce il fattore di vincita data una schedina
   /// @param scheda la schedina da controllare
   /// @return Il fattore di vincita data dalla tabella
-  int get_win_f(Schedina scheda);
+  int get_win_f(const Schedina &scheda) const;
 
-  int numbers_in_common(Schedina scheda);
-  int numbers_in_common_extra(Schedina scheda);
+  int numbers_in_common(const Schedina &scheda) const;
+  int numbers_in_common_extra(const Schedina &scheda) const;
+  int numbers_in_common_doppio_oro(const Schedina &scheda) const;
+  bool check_oro(const Schedina &scheda) const;
+  bool check_gong(const Schedina &scheda) const;
 
-  void print_twenty();
-  void print_doppio_oro();
-  void print_extra();
-  void print_gong_n();
+  void print_twenty() const;
+  void print_doppio_oro() const;
+  void print_extra() const;
+  void print_gong_n() const;
 };
 
 #endif
