@@ -87,7 +87,7 @@ bool Extraction_event::check_win(const Schedina &scheda) const {
     return 1;
   } // altrimenti se la schedina ha solo l'oro e l'ha preso, allora...
   else if (scheda.has_oro() &&
-           std::count(ten.begin(), ten.end(), oro_[0]) == 1) {
+           std::count(ten.cbegin(), ten.cend(), oro_[0]) == 1) {
     return 1;
   }
 
@@ -133,7 +133,7 @@ int Extraction_event::get_win_f(const Schedina &scheda) const {
   } // altrimenti se la schedina ha preso un solo oro, allora...
   else if ((scheda.has_doppio_oro() && count_doppio_oro == 1) ||
            (scheda.has_oro() &&
-            std::count(ten.begin(), ten.end(), oro_[0]) == 1)) {
+            std::count(ten.cbegin(), ten.cend(), oro_[0]) == 1)) {
     total_win_f += getValueFromTable("wins/oro.txt", size - 1, count);
   } else {
     total_win_f += getValueFromTable("wins/twenty.txt", size - 1, count);
@@ -161,19 +161,19 @@ int Extraction_event::numbers_in_common_doppio_oro(
 }
 
 bool Extraction_event::check_oro(const Schedina &scheda) const {
-  if (std::count(scheda.get_ten().begin(), scheda.get_ten().end(), oro_[0]) ==
-      1) {
-    return 1;
+  std::vector<int> ten = scheda.get_ten();
+  if (std::count(ten.begin(), ten.end(), oro_[0]) == 1) {
+    return true;
   } else {
-    return 0;
+    return false;
   }
 }
 
 bool Extraction_event::check_gong(const Schedina &scheda) const {
   if (scheda.get_gong_n() == gong_n_) {
-    return 1;
+    return true;
   } else {
-    return 0;
+    return false;
   }
 }
 
@@ -200,4 +200,46 @@ void Extraction_event::print_extra() const {
 
 void Extraction_event::print_gong_n() const {
   std::cout << "il numero gong è: " << gong_n_ << '\n';
+}
+
+void Extraction_event::print_results(const Schedina &scheda, int &win_n) const {
+  // stampa esito schedina
+
+  int numbers = scheda.get_ten().size();
+  int count = countIntegersInCommon(scheda.get_ten(),twenty_);
+  int count_doppio_oro = countIntegersInCommon(scheda.get_ten(), oro_);
+  int count_extra = countIntegersInCommon(scheda.get_ten(), fifteen_);
+
+      std::cout << "(" << count << " su " << numbers << ", ";
+      if (scheda.has_doppio_oro()) {
+        std::cout << "doppio oro " << count_doppio_oro << " su 2, ";
+      } else if (scheda.has_oro()) {
+        std::cout << "oro ";
+        if (this->check_oro(scheda)) {
+          std::cout << "PRESO, ";
+        } else {
+          std::cout << "non preso, ";
+        }
+      }
+      if (scheda.has_extra())
+        std::cout << "extra " << count_extra << " su " << numbers << ", ";
+      if (scheda.has_gong())
+        std::cout << "gong: ";
+      if (this->check_gong(scheda)) {
+        std::cout << "sì, ";
+      } else {
+        std::cout << "no, ";
+      }
+      if (this->check_win(scheda)) {
+        std::cout << "\033[32m"
+                  << "schedina vincente"
+                  << "\033[0m)"
+                  << "\n";
+        win_n++;
+      } else {
+        std::cout << "\033[31m"
+                  << "schedina non vincente"
+                  << "\033[0m)"
+                  << "\n";
+      }
 }

@@ -1,3 +1,6 @@
+// compilazione: g++ -Wall -Wextra -fsanitize=address main.cpp
+// Extraction_event.cpp
+
 #include <algorithm>
 #include <iostream>
 #include <math.h>
@@ -90,7 +93,9 @@ int main(int const argc, char const *const *argv) {
   // inserimento opzioni gioco
   std::cout << "Quanto vuoi giocare? (multiplo di 0.50€)\n";
   std::cin >> bet;
-  if (fmodf(bet, 0.5f) != 0.f) {
+  if (bet < 1.f) {
+    throw std::runtime_error("Il bet deve essere al minimo 1.");
+  } else if (fmodf(bet, 0.5f) != 0.f) {
     throw std::runtime_error("Il bet deve essere un multiplo di 0.50€.");
   }
   std::cout << "Giocare il Doppio Oro? (\"1\" for yes)\n";
@@ -156,8 +161,8 @@ int main(int const argc, char const *const *argv) {
 
     Extraction_event extraction(ninty, distr(rd));
     int count = extraction.numbers_in_common(scheda);
-    int count_extra = extraction.numbers_in_common_extra(scheda);
-    int count_doppio_oro = extraction.numbers_in_common_doppio_oro(scheda);
+    /* int count_extra = extraction.numbers_in_common_extra(scheda);
+    int count_doppio_oro = extraction.numbers_in_common_doppio_oro(scheda); */
     categ[count]++;
 
     // se si mette l'opzione "-pr" (Print Result) si stampano i risultati per
@@ -167,12 +172,12 @@ int main(int const argc, char const *const *argv) {
       // stampa informazioni estrazione
       std::cout << "estrazione n. " << n_it + 1 << '\n' << '\n';
 
-      /* // stampa il vettore
+      // stampa il vettore
       std::cout << "il vettore ninty è: ";
       for (int i : ninty) {
         std::cout << i << ' ';
       }
-      std::cout << "\n\n"; */
+      std::cout << "\n\n";
 
       extraction.print_twenty();
       if (doppio_oro_s || oro_s) {
@@ -185,37 +190,10 @@ int main(int const argc, char const *const *argv) {
         extraction.print_gong_n();
       }
 
-      // stampa esito schedina
-      std::cout << "(" << count << " su " << numbers << ", ";
-      if (doppio_oro_s) {
-        std::cout << "doppio oro " << count_doppio_oro << " su 2, ";
-      } else if (oro_s) {
-        std::cout << "oro ";
-      /*TEST TEST TEST*/ std::cout << "QUESTO è UNA PROVA////////////\n";
-        if (extraction.check_oro(scheda)) {
-          std::cout << "PRESO, ";
-        } else {
-          std::cout << "non preso, ";
-        }
-      }
-      if (extra_s)
-        std::cout << "extra " << count_extra << " su " << numbers << ", ";
-      if (extraction.check_win(scheda)) {
-        std::cout << "\033[32m"
-                  << "schedina vincente"
-                  << "\033[0m)"
-                  << "\n";
-        win_n++;
-      } else {
-        std::cout << "\033[31m"
-                  << "schedina non vincente"
-                  << "\033[0m)"
-                  << "\n";
-      }
+      extraction.print_results(scheda, win_n);
       std::cout << "\n--------------------------------------------\n" << '\n';
-    }
 
-    if (argc == 1 || (argc > 1 && std::string(argv[1]) != "-pr")) {
+    } else if (argc == 1 || (argc > 1 && std::string(argv[1]) != "-pr")) {
 
       if (extraction.check_win(scheda)) {
         win_n++;
@@ -243,6 +221,7 @@ int main(int const argc, char const *const *argv) {
                      100
               << "%)" << '\n';
   }
+  std::cout << '\n' << '\n';
 
   return 0;
 }

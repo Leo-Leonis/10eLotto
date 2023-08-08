@@ -41,6 +41,8 @@ public:
   void print_doppio_oro() const;
   void print_extra() const;
   void print_gong_n() const;
+
+  void print_results(const Schedina &scheda, int &win_n) const;
 };
 
 #endif
