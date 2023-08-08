@@ -191,6 +191,7 @@ int main(int const argc, char const *const *argv) {
       }
 
       extraction.print_results(scheda, win_n);
+      
       std::cout << "\n--------------------------------------------\n" << '\n';
 
     } else if (argc == 1 || (argc > 1 && std::string(argv[1]) != "-pr")) {
