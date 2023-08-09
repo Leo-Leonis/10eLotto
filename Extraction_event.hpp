@@ -21,12 +21,12 @@ private:
 public:
   Extraction_event(const std::vector<int> &numbers, int gong_n);
 
-  /// @brief Controlla se una schedina è vincente o no
+  /// @brief Controlla se una schedina è vincente o no.
   /// @param scheda la schedina da controllare
   /// @return 1 se è vincente, 0 se non lo è
   bool check_win(const Schedina &scheda) const;
 
-  /// @brief Restituisce il fattore di vincita data una schedina
+  /// @brief Restituisce il fattore di vincita di una schedina.
   /// @param scheda la schedina da controllare
   /// @return Il fattore di vincita data dalla tabella
   int get_win_f(const Schedina &scheda) const;
@@ -42,6 +42,10 @@ public:
   void print_extra() const;
   void print_gong_n() const;
 
+  /// @brief Stampa i risultati delle schedina, con: quantità di numeri presi,
+  /// doppio oro, extra e gong.
+  /// @param scheda la schedina da controllare
+  /// @param win_n il numero totale di vincite
   void print_results(const Schedina &scheda, int &win_n) const;
 };
 

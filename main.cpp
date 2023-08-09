@@ -2,6 +2,7 @@
 // Extraction_event.cpp
 
 #include <algorithm>
+#include <fstream>
 #include <iostream>
 #include <math.h>
 #include <numeric>
@@ -39,96 +40,131 @@ int main(int const argc, char const *const *argv) {
 
   // quantità dei numeri della schedina (ten)
   int numbers;
-  std::cout << "quantità di numeri della schedina (da 1 a 10): ";
-  std::cin >> numbers;
-  if (numbers < 1) {
-    std::cout
-        << "il minimo è 1, per colpa tua la quantità è stata riportata a 1."
-        << '\n';
-    numbers = 1;
-  } else if (numbers > 10) {
-    std::cout
-        << "il massimo è 10, per colpa tua la quantità è stata riportata a 10."
-        << '\n';
-    numbers = 10;
-  }
-  std::cout << '\n';
-  std::vector<int> ten(numbers);
+  // vettore di dieci numeri
+  std::vector<int> ten;
 
-  std::string opt;
-  std::cout << "randomizzo? (\"1\" for yes, other key for no)" << '\n';
-  std::cin >> opt;
-  if (opt == "1") {
-    std::shuffle(ninty.begin(), ninty.end(), g);
-    for (int i = 0; i < numbers; i++) {
-      ten[i] = ninty[i];
+  if (argc > 2) {
+    if (argv[2] == std::string("-last")) {
+      std::ifstream ifile("last_settings.txt");
+      std::string s;
+      if (ifile.good()) {
+        ifile >> numbers;
+        ten = std::vector<int>(numbers);
+        for (int i = 0; i != numbers; i++) {
+          ifile >> ten[i];
+        }
+        ifile >> bet;
+        ifile >> oro_s;
+        ifile >> doppio_oro_s;
+        ifile >> extra_s;
+        ifile >> extra_bet;
+        ifile >> gong_s;
+        ifile >> gong_n;
+        ifile >> s;
+        if (s != "STOP") {
+          throw std::runtime_error{"Errore nella lettura dei parametri. Per "
+                                   "favore rigenerare il file "
+                                   "\"last_settings.txt\"."};
+        }
+      } else { // altrimenti se non è stato trovato il file last_settings.txt...
+        throw std::runtime_error{"File \"last_settings.txt\" inesistente. Per "
+                                 "favore rigenerare file."};
+      }
     }
-  } else {
-    if (numbers == 1) {
-      std::cout << "inserire il numero: ";
-      std::cin >> ten[0];
-    } else {
-      std::cout << "inserire i " << numbers << " numeri (da 1 a 90):\n";
-      // numero provvisorio da inserire
-      int n_check;
+  } else { // altrimenti inserimento manuale dei parametri
+    std::cout << "quantità di numeri della schedina (da 1 a 10): ";
+    std::cin >> numbers;
+    if (numbers < 1) {
+      std::cout
+          << "il minimo è 1, per colpa tua la quantità è stata riportata a 1."
+          << '\n';
+      numbers = 1;
+    } else if (numbers > 10) {
+      std::cout << "il massimo è 10, per colpa tua la quantità è stata "
+                   "riportata a 10."
+                << '\n';
+      numbers = 10;
+    }
+    std::cout << '\n';
+
+    ten = std::vector<int>(numbers);
+    std::string opt;
+    std::cout << "randomizzo? (\"1\" for yes, other key for no)" << '\n';
+    std::cin >> opt;
+    if (opt == "1") {
+      std::shuffle(ninty.begin(), ninty.end(), g);
       for (int i = 0; i < numbers; i++) {
-        std::cout << "n. " << i + 1 << ": ";
-        std::cin >> n_check;
-        if (std::count(ten.begin(), ten.end(), n_check) != 0) {
-          std::cout
-              << "ATTENZIONE: numero già inserito. Riprova a inserire il ";
-          i--;
-        } else if (n_check < 1 || n_check > 90) {
-          std::cout << "ATTENZIONE: valore fuori range (da 1 a 90). Riprova a "
-                       "inserire il ";
-          i--;
-        } else {
-          ten[i] = n_check;
+        ten[i] = ninty[i];
+      }
+    } else {
+      if (numbers == 1) {
+        std::cout << "inserire il numero: ";
+        std::cin >> ten[0];
+      } else {
+        std::cout << "inserire i " << numbers << " numeri (da 1 a 90):\n";
+        // numero provvisorio da inserire
+        int n_check;
+        for (int i = 0; i < numbers; i++) {
+          std::cout << "n. " << i + 1 << ": ";
+          std::cin >> n_check;
+          if (std::count(ten.begin(), ten.end(), n_check) != 0) {
+            std::cout
+                << "ATTENZIONE: numero già inserito. Riprova a inserire il ";
+            i--;
+          } else if (n_check < 1 || n_check > 90) {
+            std::cout
+                << "ATTENZIONE: valore fuori range (da 1 a 90). Riprova a "
+                   "inserire il ";
+            i--;
+          } else {
+            ten[i] = n_check;
+          }
         }
       }
     }
-  }
-  std::sort(ten.begin(), ten.end());
+    std::sort(ten.begin(), ten.end());
 
-  // inserimento opzioni gioco
-  std::cout << "Quanto vuoi giocare? (multiplo di 0.50€)\n";
-  std::cin >> bet;
-  if (bet < 1.f) {
-    throw std::runtime_error("Il bet deve essere al minimo 1.");
-  } else if (fmodf(bet, 0.5f) != 0.f) {
-    throw std::runtime_error("Il bet deve essere un multiplo di 0.50€.");
-  }
-  std::cout << "Giocare il Doppio Oro? (\"1\" for yes)\n";
-  std::cin >> doppio_oro_s;
-  if (doppio_oro_s == 0) {
-    std::cout << "Giocare l'Oro? (\"1\" for yes)\n";
-    std::cin >> oro_s;
-  }
-  std::cout << "Giocare l'Extra? (\"1\" for yes)\n";
-  std::cin >> extra_s;
-  if (extra_s == 1) {
-    std::cout << "Quanto vuoi giocare nell'Extra? (multiplo di 0.50€)\n";
-    std::cin >> extra_bet;
-    if (extra_bet > bet) {
-      throw std::runtime_error("L'Extra non può essere più alto del 10eLotto.");
+    // inserimento opzioni gioco
+    std::cout << "Quanto vuoi giocare? (multiplo di 0.50€)\n";
+    std::cin >> bet;
+    if (bet < 1.f) {
+      throw std::runtime_error("Il bet deve essere al minimo 1.");
+    } else if (fmodf(bet, 0.5f) != 0.f) {
+      throw std::runtime_error("Il bet deve essere un multiplo di 0.50€.");
     }
-    if (fmodf(extra_bet, 0.5f) != 0.f) {
-      throw std::runtime_error("L'Extra deve essere un multiplo di 0.50€.");
+    std::cout << "Giocare il Doppio Oro? (\"1\" for yes)\n";
+    std::cin >> doppio_oro_s;
+    if (doppio_oro_s == 0) {
+      std::cout << "Giocare l'Oro? (\"1\" for yes)\n";
+      std::cin >> oro_s;
     }
-  } else {
-    extra_bet = 0.f;
-  }
-  std::cout << "Giocare il Gong? (\"1\" for yes)\n";
-  std::cin >> gong_s;
-  if (gong_s == 1) {
-    std::string c;
-    std::cout << "randomizzo? (\"1\" for yes)\n";
-    std::cin >> c;
-    if (c == "1") {
-      gong_n = distr(rd);
+    std::cout << "Giocare l'Extra? (\"1\" for yes)\n";
+    std::cin >> extra_s;
+    if (extra_s == 1) {
+      std::cout << "Quanto vuoi giocare nell'Extra? (multiplo di 0.50€)\n";
+      std::cin >> extra_bet;
+      if (extra_bet > bet) {
+        throw std::runtime_error(
+            "L'Extra non può essere più alto del 10eLotto.");
+      }
+      if (fmodf(extra_bet, 0.5f) != 0.f) {
+        throw std::runtime_error("L'Extra deve essere un multiplo di 0.50€.");
+      }
     } else {
-      std::cout << "Inserire in numero gong: ";
-      std::cin >> gong_n;
+      extra_bet = 0.f;
+    }
+    std::cout << "Giocare il Gong? (\"1\" for yes)\n";
+    std::cin >> gong_s;
+    if (gong_s == 1) {
+      std::string c;
+      std::cout << "randomizzo? (\"1\" for yes)\n";
+      std::cin >> c;
+      if (c == "1") {
+        gong_n = distr(rd);
+      } else {
+        std::cout << "Inserire in numero gong: ";
+        std::cin >> gong_n;
+      }
     }
   }
 
@@ -150,6 +186,10 @@ int main(int const argc, char const *const *argv) {
 
   // numero di vincite totale di tutte le iterazioni fatte
   int win_n = 0;
+  // soldi di vincita totale
+  float total_won_money = 0.f;
+  // quantità di soldi vinti correnti
+  float money_won = 0.f;
   // array di quanti numberi beccati
   std::vector<int> categ(numbers + 1);
 
@@ -165,6 +205,9 @@ int main(int const argc, char const *const *argv) {
     int count_doppio_oro = extraction.numbers_in_common_doppio_oro(scheda); */
     categ[count]++;
 
+    money_won = extraction.get_win_f(scheda);
+    total_won_money += money_won;
+
     // se si mette l'opzione "-pr" (Print Result) si stampano i risultati per
     // tutte le estrazioni
     if (argc > 1 && std::string(argv[1]) == "-pr") {
@@ -172,12 +215,12 @@ int main(int const argc, char const *const *argv) {
       // stampa informazioni estrazione
       std::cout << "estrazione n. " << n_it + 1 << '\n' << '\n';
 
-      // stampa il vettore
+      /* // stampa il vettore
       std::cout << "il vettore ninty è: ";
       for (int i : ninty) {
         std::cout << i << ' ';
       }
-      std::cout << "\n\n";
+      std::cout << "\n\n"; */
 
       extraction.print_twenty();
       if (doppio_oro_s || oro_s) {
@@ -191,12 +234,12 @@ int main(int const argc, char const *const *argv) {
       }
 
       extraction.print_results(scheda, win_n);
-      
+
       std::cout << "\n--------------------------------------------\n" << '\n';
 
     } else if (argc == 1 || (argc > 1 && std::string(argv[1]) != "-pr")) {
 
-      if (extraction.check_win(scheda)) {
+      if (money_won != 0) {
         win_n++;
       }
       // print number of progress in order to give feedback
@@ -210,12 +253,12 @@ int main(int const argc, char const *const *argv) {
 
   std::cout << '\n'
             << '\n'
-            << "esito di " << iterations << " estrazioni. Vincite: " << win_n
+            << "Esito di " << iterations << " estrazioni. Vincite: " << win_n
             << "/" << iterations << " = "
             << static_cast<float>(win_n) * 100 / static_cast<float>(iterations)
             << '%' << "\n\n";
 
-  std::cout << "risultati per quantità numeri presi: \n\n";
+  std::cout << "Risultati per quantità numeri presi: \n\n";
   for (int i = 0; i < numbers + 1; i++) {
     std::cout << "     " << categ[i] << " x " << i << " numeri ("
               << static_cast<float>(categ[i]) / static_cast<float>(iterations) *
@@ -224,5 +267,27 @@ int main(int const argc, char const *const *argv) {
   }
   std::cout << '\n' << '\n';
 
+  float total_spent_money =
+      static_cast<float>(iterations) * scheda.get_total_bet();
+  std::cout << "Soldi spesi: " << scheda.get_total_bet() << "€ * " << iterations
+            << " estrazioni = " << total_spent_money << "€" << '\n';
+
+  std::cout << "Soldi vinti: " << total_won_money << "€ ("
+            << total_won_money / total_spent_money * 100
+            << "% rispetto al totale speso)" << '\n';
+
+  std::cout << "     Ricavo: " << total_won_money - total_spent_money << "€ ("
+            << (total_won_money - total_spent_money) * 100 / total_spent_money
+            << "% rispetto al totale speso)" << '\n';
+
+  std::ofstream ofile("last_settings.txt");
+  ofile << numbers << " ";
+  for (int i : ten) {
+    ofile << i << " ";
+  }
+  ofile << bet << " " << oro_s << " " << doppio_oro_s << " " << extra_s << " "
+        << extra_bet << " " << gong_s << " " << gong_n << " " << "STOP" << '\n';
+
+  std::cout << '\n' << '\n';
   return 0;
 }

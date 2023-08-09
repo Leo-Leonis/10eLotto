@@ -206,40 +206,42 @@ void Extraction_event::print_results(const Schedina &scheda, int &win_n) const {
   // stampa esito schedina
 
   int numbers = scheda.get_ten().size();
-  int count = countIntegersInCommon(scheda.get_ten(),twenty_);
+  int count = countIntegersInCommon(scheda.get_ten(), twenty_);
   int count_doppio_oro = countIntegersInCommon(scheda.get_ten(), oro_);
   int count_extra = countIntegersInCommon(scheda.get_ten(), fifteen_);
 
-      std::cout << "(" << count << " su " << numbers << ", ";
-      if (scheda.has_doppio_oro()) {
-        std::cout << "doppio oro " << count_doppio_oro << " su 2, ";
-      } else if (scheda.has_oro()) {
-        std::cout << "oro ";
-        if (this->check_oro(scheda)) {
-          std::cout << "PRESO, ";
-        } else {
-          std::cout << "non preso, ";
-        }
-      }
-      if (scheda.has_extra())
-        std::cout << "extra " << count_extra << " su " << numbers << ", ";
-      if (scheda.has_gong())
-        std::cout << "gong: ";
-      if (this->check_gong(scheda)) {
-        std::cout << "sì, ";
-      } else {
-        std::cout << "no, ";
-      }
-      if (this->check_win(scheda)) {
-        std::cout << "\033[32m"
-                  << "schedina vincente"
-                  << "\033[0m)"
-                  << "\n";
-        win_n++;
-      } else {
-        std::cout << "\033[31m"
-                  << "schedina non vincente"
-                  << "\033[0m)"
-                  << "\n";
-      }
+  std::cout << "(" << count << " su " << numbers << ", ";
+  if (scheda.has_doppio_oro()) {
+    std::cout << "doppio oro " << count_doppio_oro << " su 2, ";
+  } else if (scheda.has_oro()) {
+    std::cout << "oro ";
+    if (this->check_oro(scheda)) {
+      std::cout << "PRESO, ";
+    } else {
+      std::cout << "non preso, ";
+    }
+  }
+  if (scheda.has_extra())
+    std::cout << "extra " << count_extra << " su " << numbers << ", ";
+  if (scheda.has_gong()) {
+    std::cout << "gong: ";
+    if (this->check_gong(scheda)) {
+      std::cout << "sì, ";
+    } else {
+      std::cout << "no, ";
+    }
+  }
+  if (this->check_win(scheda)) {
+    std::cout << "\033[32m"
+              << "schedina vincente"
+              << "\033[0m, " << this->get_win_f(scheda) * scheda.get_bet()
+              << "€)"
+              << "\n";
+    win_n++;
+  } else {
+    std::cout << "\033[31m"
+              << "schedina non vincente"
+              << "\033[0m)"
+              << "\n";
+  }
 }
