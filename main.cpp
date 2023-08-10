@@ -205,7 +205,7 @@ int main(int const argc, char const *const *argv) {
     int count_doppio_oro = extraction.numbers_in_common_doppio_oro(scheda); */
     categ[count]++;
 
-    money_won = extraction.get_win_f(scheda);
+    money_won = extraction.get_win(scheda);
     total_won_money += money_won;
 
     // se si mette l'opzione "-pr" (Print Result) si stampano i risultati per

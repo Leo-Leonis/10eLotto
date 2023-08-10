@@ -105,14 +105,14 @@ bool Extraction_event::check_win(const Schedina &scheda) const {
   }
 }
 
-int Extraction_event::get_win_f(const Schedina &scheda) const {
+int Extraction_event::get_win(const Schedina &scheda) const {
 
   // fattore di vincita totale
   int total_win_f = 0;
 
   // gong
   if (scheda.has_gong() && scheda.get_gong_n() == gong_n_) {
-    total_win_f += getValueFromTable("wins/gong.txt", 0, 0);
+    total_win_f += scheda.get_bet() * getValueFromTable("wins/gong.txt", 0, 0);
   }
 
   // vettore dei numeri scelti
@@ -129,19 +129,19 @@ int Extraction_event::get_win_f(const Schedina &scheda) const {
 
   // se la schedina ha il doppio oro e ne ha beccati 2, allora...
   if (scheda.has_doppio_oro() && count_doppio_oro == 2) {
-    total_win_f += getValueFromTable("wins/doppio_oro.txt", size - 1, count);
+    total_win_f += scheda.get_bet() * getValueFromTable("wins/doppio_oro.txt", size - 1, count);
   } // altrimenti se la schedina ha preso un solo oro, allora...
   else if ((scheda.has_doppio_oro() && count_doppio_oro == 1) ||
            (scheda.has_oro() &&
             std::count(ten.cbegin(), ten.cend(), oro_[0]) == 1)) {
-    total_win_f += getValueFromTable("wins/oro.txt", size - 1, count);
+    total_win_f += scheda.get_bet() * getValueFromTable("wins/oro.txt", size - 1, count);
   } else {
-    total_win_f += getValueFromTable("wins/twenty.txt", size - 1, count);
+    total_win_f += scheda.get_bet() * getValueFromTable("wins/twenty.txt", size - 1, count);
   }
 
   // se la schedina ha l'extra e ne ha preso il numero sufficiente allora...
   if (scheda.has_extra()) {
-    total_win_f += getValueFromTable("wins/extra.txt", size - 1, count_extra);
+    total_win_f += scheda.get_extra_bet() * getValueFromTable("wins/extra.txt", size - 1, count_extra);
   }
 
   return total_win_f;
@@ -234,7 +234,7 @@ void Extraction_event::print_results(const Schedina &scheda, int &win_n) const {
   if (this->check_win(scheda)) {
     std::cout << "\033[32m"
               << "schedina vincente"
-              << "\033[0m, " << this->get_win_f(scheda) * scheda.get_bet()
+              << "\033[0m, " << this->get_win(scheda)
               << "€)"
               << "\n";
     win_n++;
