@@ -29,7 +29,7 @@ public:
   /// @brief Restituisce la vincita di una schedina.
   /// @param scheda la schedina da controllare
   /// @return Il fattore di vincita data dalla tabella
-  int get_win(const Schedina &scheda) const;
+  float get_win(const Schedina &scheda) const;
 
   int numbers_in_common(const Schedina &scheda) const;
   int numbers_in_common_extra(const Schedina &scheda) const;

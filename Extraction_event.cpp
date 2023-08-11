@@ -32,20 +32,18 @@ int getValueFromTable(const std::string &filename, int row, int column) {
   int value = -1;
   std::string line;
 
-  // Scorrere fino alla riga desiderata
+  // Selezione della riga desiderata
   for (int i = 0; i <= row; ++i) {
     if (!std::getline(file, line)) {
-      std::cerr << "Riga non trovata." << std::endl;
-      return -1;
+      throw std::runtime_error("Riga non trovata.");
     }
   }
 
-  // Leggere il valore nella colonna desiderata
+  // Lettura del valore nella colonna desiderata
   std::istringstream iss(line);
   for (int i = 0; i <= column; ++i) {
     if (!(iss >> value)) {
-      std::cerr << "Colonna non trovata." << std::endl;
-      return -1;
+      throw std::runtime_error("Colonna non trovata.");
     }
   }
 
@@ -105,10 +103,10 @@ bool Extraction_event::check_win(const Schedina &scheda) const {
   }
 }
 
-int Extraction_event::get_win(const Schedina &scheda) const {
+float Extraction_event::get_win(const Schedina &scheda) const {
 
   // fattore di vincita totale
-  int total_win_f = 0;
+  float total_win_f = 0;
 
   // gong
   if (scheda.has_gong() && scheda.get_gong_n() == gong_n_) {

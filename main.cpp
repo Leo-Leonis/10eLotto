@@ -184,6 +184,11 @@ int main(int const argc, char const *const *argv) {
   }
   std::cout << '\n';
 
+  float win_reg[iterations];
+  float total_spent_money =
+      static_cast<float>(iterations) * scheda.get_total_bet();
+  win_reg[0] = total_spent_money;
+
   // numero di vincite totale di tutte le iterazioni fatte
   int win_n = 0;
   // soldi di vincita totale
@@ -207,6 +212,8 @@ int main(int const argc, char const *const *argv) {
 
     money_won = extraction.get_win(scheda);
     total_won_money += money_won;
+
+    win_reg[n_it + 1] = win_reg[n_it] - scheda.get_total_bet() + money_won;
 
     // se si mette l'opzione "-pr" (Print Result) si stampano i risultati per
     // tutte le estrazioni
@@ -267,8 +274,6 @@ int main(int const argc, char const *const *argv) {
   }
   std::cout << '\n' << '\n';
 
-  float total_spent_money =
-      static_cast<float>(iterations) * scheda.get_total_bet();
   std::cout << "Soldi spesi: " << scheda.get_total_bet() << "€ * " << iterations
             << " estrazioni = " << total_spent_money << "€" << '\n';
 
@@ -286,8 +291,13 @@ int main(int const argc, char const *const *argv) {
     ofile << i << " ";
   }
   ofile << bet << " " << oro_s << " " << doppio_oro_s << " " << extra_s << " "
-        << extra_bet << " " << gong_s << " " << gong_n << " " << "STOP" << '\n';
+        << extra_bet << " " << gong_s << " " << gong_n << " "
+        << "STOP" << '\n';
 
+  std::ofstream ofile2("progress.txt");
+  for (int i = 0; i != iterations + 1; i++) {
+    ofile2 << i << '\t' << win_reg[i] << '\n';
+  }
   std::cout << '\n' << '\n';
   return 0;
 }
